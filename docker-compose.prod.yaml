@@ -33,7 +33,7 @@ services:
       context: .
     env_file:
       - .env
-    command: celery -A main.celery worker -l info
+    command: celery -A app.celery worker -l info
     depends_on:
       - web
       - redis
@@ -42,7 +42,7 @@ services:
       context: .
     env_file:
       - .env
-    command: celery -A main.celery beat -l info
+    command: celery -A app.celery beat -l info
     depends_on:
       - web
       - redis
