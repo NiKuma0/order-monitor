@@ -41,3 +41,8 @@ CELERY_RESULT_BACKEND = CELERY_BROKER_URL = (
     f'redis://{os.getenv("REDIS_USER")}:{os.getenv("REDIS_PASSWORD")}'
     f'@{os.getenv("REDIS_HOST")}:{os.getenv("REDIS_PORT")}/0'
 )
+
+
+# Telegram
+BOT_TOKEN = os.getenv('BOT_TOKEN')
+CHAT_ID = os.getenv('CHAT_ID')

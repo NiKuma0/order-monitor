@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from celery.schedules import crontab
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -106,11 +108,12 @@ SHEET_ID = '1SxZGYZkHyXhOEbkx8_LGIhQ4mXSkus2HTtkTu0KePWM'
 CELERY_TIMEZONE = TIME_ZONE
 
 CELERY_BEAT_SCHEDULE = {
-    'add-every-30-seconds': {
-        'task': 'app.tasks.test_task',
+    'sync-sheet-and-db-every-hour': {
+        'task': 'app.tasks.sync_sheet_and_db',
         'schedule': 60*60,  # one hour
-        'options': {
-            'expires': 15.0,
-        },
+    },
+    'notify-every-day': {
+        'task': 'app.tasks.notify_telegram',
+        'schedule': crontab(hour=12),
     },
 }

@@ -32,7 +32,7 @@ def get_service() -> Resource:
     return build('sheets', 'v4', credentials=creds)
 
 
-def sync_sheet_and_db(rows: list[list]) -> int:
+def sync_rows_and_orders(rows: list[list]) -> int:
     '''Синхронизация ДБ с таблицей
 
     Args:
@@ -51,6 +51,7 @@ def sync_sheet_and_db(rows: list[list]) -> int:
             orders_to_create.append(order)
         order.id, order.order_id, order.dollar_price, order.order_date = row
         order.order_date = datetime.datetime.strptime(order.order_date, '%d.%m.%Y')
+        order.notified = False
 
     with transaction.atomic():
         Order.objects.exclude(id__in=ids).delete()
@@ -79,7 +80,7 @@ class OrderViewSet(GenericViewSet, ListModelMixin):
     @action(('PATH',), detail=False, url_path='import')
     def order_import(self):
         rows = get_sheet_as_list()
-        count_created = sync_sheet_and_db(rows['values'])
+        count_created = sync_rows_and_orders(rows['values'])
         if not count_created:
             return Response(status=HTTPStatus.OK)
         return Response(
