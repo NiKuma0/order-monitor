@@ -1,0 +1,62 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:13.3
+    restart: always
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+  redis:
+    image: redis:6.0
+    restart: always
+  web:
+    build: 
+      context: .
+    env_file:
+      - .env
+    restart: always
+    command: gunicorn main.wsgi:application --bind 0.0.0.0:8000
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - staticfiles:/home/app/web/static
+  celery:
+    build: 
+      context: .
+    env_file:
+      - .env
+    command: celery -A main.celery worker -l info
+    depends_on:
+      - web
+      - redis
+  celery-beat:
+    build: 
+      context: .
+    env_file:
+      - .env
+    command: celery -A main.celery beat -l info
+    depends_on:
+      - web
+      - redis
+
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - '80:80'
+    depends_on:
+      - web
+    volumes:
+      - staticfiles:/home/app/web/static
+
+volumes:
+  postgres_data:
+  staticfiles:
