@@ -3,14 +3,14 @@ from time import time
 
 from django.test import TestCase
 
-from app.views import sync_rows_and_orders
+from app.google_sheet import sync_sheet_and_db
 from app.models import Order
 
 
 class SyncSheetAndDbTest(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.function = sync_rows_and_orders
+        cls.function = sync_sheet_and_db
         return super().setUpClass()
 
     def setUp(self) -> None:

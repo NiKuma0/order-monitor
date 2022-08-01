@@ -109,7 +109,7 @@ CELERY_TIMEZONE = TIME_ZONE
 
 CELERY_BEAT_SCHEDULE = {
     'sync-sheet-and-db-every-hour': {
-        'task': 'app.tasks.sync_sheet_and_db',
+        'task': 'app.tasks.task_sync_sheet_and_db',
         'schedule': 60*60,  # one hour
     },
     'notify-every-day': {
